@@ -29,6 +29,7 @@ if VERCEL:
     TRANSACTIONS_FILE = "/tmp/transactions.csv"
     INVENTORY_FILE = "/tmp/inventory.csv"
     TX_EXCEL_FILE = "/tmp/transactions_excel.csv"
+    TRANSACTIONS_DIR = "/tmp/transactions"
     
     orig_tx = os.path.join("data", "transactions.csv")
     orig_inv = os.path.join("data", "inventory.csv")
@@ -44,6 +45,7 @@ else:
     TRANSACTIONS_FILE = os.path.join("data", "transactions.csv")
     INVENTORY_FILE = os.path.join("data", "inventory.csv")
     TX_EXCEL_FILE = os.path.join("data", "transactions_excel.csv")
+    TRANSACTIONS_DIR = os.path.join("data", "transactions")
 
 # Pydantic Schemas for JSON requests
 class RestockRequest(BaseModel):
@@ -97,9 +99,25 @@ def init_transactions_excel():
     os.makedirs(os.path.dirname(TX_EXCEL_FILE), exist_ok=True)
     excel_df.to_csv(TX_EXCEL_FILE, index=False)
     
+    # Split and write individual transaction CSV files for historical records
+    os.makedirs(TRANSACTIONS_DIR, exist_ok=True)
+    for time_val, group in excel_df.groupby("Time"):
+        try:
+            t_dt = datetime.strptime(time_val, "%Y-%m-%d %H:%M:%S")
+            tx_key = t_dt.strftime("%Y%m%d_%H%M%S")
+            group.to_csv(os.path.join(TRANSACTIONS_DIR, f"transaction_{tx_key}.csv"), index=False)
+        except Exception:
+            pass
+    
     if VERCEL:
         try:
             shutil.copy(TX_EXCEL_FILE, os.path.join("data", "transactions_excel.csv"))
+            # Sync generated transactions dir back to data/transactions
+            dest_dir = os.path.join("data", "transactions")
+            os.makedirs(dest_dir, exist_ok=True)
+            for f in os.listdir(TRANSACTIONS_DIR):
+                if f.endswith(".csv"):
+                    shutil.copy(os.path.join(TRANSACTIONS_DIR, f), os.path.join(dest_dir, f))
         except Exception:
             pass
 
@@ -129,11 +147,8 @@ def get_summary():
     else:
         top_selling = "None"
         
-    # Calculate Today's Revenue (GMT+5:30)
-    if VERCEL:
-        ist_now = datetime.utcnow() + timedelta(hours=5, minutes=30)
-    else:
-        ist_now = datetime.now()
+    # Calculate Today's Revenue (IST: GMT+5:30)
+    ist_now = datetime.utcnow() + timedelta(hours=5, minutes=30)
     today_date = ist_now.date()
     
     today_tx = tx_df[tx_df['timestamp'].dt.date == today_date]
@@ -296,9 +311,10 @@ def checkout_cart(payload: CheckoutRequest):
                 detail=f"Insufficient stock for '{item.product_name}'. Available: {current_stock}, Requested: {item.quantity}"
             )
             
-    # Process deductions and append to transactions
-    timestamp = datetime.now()
+    # Process deductions and append to transactions (IST: GMT+5:30)
+    timestamp = datetime.utcnow() + timedelta(hours=5, minutes=30)
     invoice_id = f"INV-{timestamp.strftime('%Y%m%d%H%M%S')}-{random.randint(100, 999)}"
+    tx_key = timestamp.strftime("%Y%m%d_%H%M%S")
     
     # Read weather conditions from recent or simulate them
     is_rainy = random.choice([0, 0, 0, 0, 1])  # 20% rain chance
@@ -360,18 +376,27 @@ def checkout_cart(payload: CheckoutRequest):
         excel_df = pd.DataFrame(excel_new_rows)
     excel_df.to_csv(TX_EXCEL_FILE, index=False)
     
+    # Save individual transaction CSV file
+    os.makedirs(TRANSACTIONS_DIR, exist_ok=True)
+    tx_file_path = os.path.join(TRANSACTIONS_DIR, f"transaction_{tx_key}.csv")
+    pd.DataFrame(excel_new_rows).to_csv(tx_file_path, index=False)
+    
     # Sync back to original files if on Vercel
     if VERCEL:
         try:
             shutil.copy(INVENTORY_FILE, os.path.join("data", "inventory.csv"))
             shutil.copy(TRANSACTIONS_FILE, os.path.join("data", "transactions.csv"))
             shutil.copy(TX_EXCEL_FILE, os.path.join("data", "transactions_excel.csv"))
+            dest_dir = os.path.join("data", "transactions")
+            os.makedirs(dest_dir, exist_ok=True)
+            shutil.copy(tx_file_path, os.path.join(dest_dir, f"transaction_{tx_key}.csv"))
         except Exception:
             pass
             
     return {
         "invoice_id": invoice_id,
         "timestamp": timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+        "tx_key": tx_key,
         "total_items": sum(item.quantity for item in payload.items),
         "total_paid": payload.total_paid,
         "items": receipt_items_detail,
@@ -383,6 +408,70 @@ def download_transactions():
     if not os.path.exists(TX_EXCEL_FILE):
         init_transactions_excel()
     return FileResponse(TX_EXCEL_FILE, media_type="text/csv", filename="transactions_log.csv")
+
+@app.get("/api/download/transaction/{tx_key}")
+def download_single_transaction(tx_key: str):
+    file_path = os.path.join(TRANSACTIONS_DIR, f"transaction_{tx_key}.csv")
+    if not os.path.exists(file_path):
+        # Fallback: dynamically reconstruct from consolidated Excel CSV if it's missing
+        if os.path.exists(TX_EXCEL_FILE):
+            try:
+                t_dt = datetime.strptime(tx_key, "%Y%m%d_%H%M%S")
+                time_str = t_dt.strftime("%Y-%m-%d %H:%M:%S")
+                excel_df = pd.read_csv(TX_EXCEL_FILE)
+                filtered = excel_df[excel_df["Time"] == time_str]
+                if not filtered.empty:
+                    os.makedirs(TRANSACTIONS_DIR, exist_ok=True)
+                    filtered.to_csv(file_path, index=False)
+            except Exception:
+                pass
+                
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Transaction file not found")
+        
+    return FileResponse(file_path, media_type="text/csv", filename=f"transaction_{tx_key}.csv")
+
+@app.get("/api/transactions/recent")
+def get_recent_transactions():
+    if not os.path.exists(TX_EXCEL_FILE):
+        init_transactions_excel()
+    if not os.path.exists(TX_EXCEL_FILE):
+        return []
+    
+    try:
+        df = pd.read_csv(TX_EXCEL_FILE)
+        if df.empty:
+            return []
+            
+        df['item_total'] = df['Price'] * df['Quantity']
+        grouped = df.groupby(['Time', 'Day']).agg(
+            total_items=('Quantity', 'sum'),
+            total_paid=('item_total', 'sum')
+        ).reset_index()
+        
+        grouped['parsed_time'] = pd.to_datetime(grouped['Time'])
+        grouped = grouped.sort_values(by='parsed_time', ascending=False)
+        
+        recent = []
+        for idx, row in grouped.head(10).iterrows():
+            t_str = row['Time']
+            try:
+                t_dt = datetime.strptime(t_str, "%Y-%m-%d %H:%M:%S")
+                tx_key = t_dt.strftime("%Y%m%d_%H%M%S")
+            except Exception:
+                tx_key = t_str.replace(" ", "_").replace(":", "-")
+                
+            recent.append({
+                "time": t_str,
+                "day": row['Day'],
+                "total_items": int(row['total_items']),
+                "total_paid": round(float(row['total_paid']), 2),
+                "tx_key": tx_key
+            })
+        return recent
+    except Exception as e:
+        print("Error getting recent transactions:", e)
+        return []
 
 # Mount static files folder
 app.mount("/", StaticFiles(directory="static", html=True), name="static")

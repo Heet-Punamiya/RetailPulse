@@ -1030,3 +1030,158 @@ h1, h2, h3, h4, .badge {
 .modal-close-btn:hover {
     box-shadow: 0 6px 20px rgba(0, 242, 254, 0.3);
 }
+
+/* ========================================================
+   BOTTOM DASHBOARD GRID & SHOPPING LIST
+   ======================================================== */
+.dashboard-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 24px;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-bottom-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.restock-list-section, .tx-download-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.shopping-list-container, .recent-tx-container {
+    padding: 24px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.shopping-list-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    transition: all 0.2s ease;
+}
+
+.shopping-list-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.sli-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sli-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.sli-details {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.sli-buy-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(0, 242, 254, 0.12);
+    color: var(--neon-green);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.1);
+}
+
+/* TRANSACTION DOWNLOAD CENTER */
+.recent-tx-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tx-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    transition: all 0.2s ease;
+}
+
+.tx-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.tx-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tx-time {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.tx-details {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.tx-dl-btn {
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.tx-dl-btn:hover {
+    background: linear-gradient(135deg, #00f2fe, #4facfe);
+    color: #080710;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(0, 242, 254, 0.2);
+}
+
+.download-all-btn {
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #ffb800, #fda085);
+    color: #080710;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(255, 184, 0, 0.2);
+}
+
+.download-all-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255, 184, 0, 0.3);
+}

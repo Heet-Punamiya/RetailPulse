@@ -50,6 +50,13 @@
                         </div>
                     </div>
                     <div class="summary-card glass">
+                        <div class="card-icon">📅</div>
+                        <div class="card-info">
+                            <span class="label">TODAY'S SALES</span>
+                            <h3 id="stat-today-revenue">₹0.00</h3>
+                        </div>
+                    </div>
+                    <div class="summary-card glass">
                         <div class="card-icon">🏆</div>
                         <div class="card-info">
                             <span class="label">TOP SELLING PRODUCT</span>
@@ -116,6 +123,37 @@
                                 <p id="forecast-desc">
                                     Select a product to view the machine learning projection. The dashed lines show future sales demand calculated by a Linear Regression model trained on transactions.
                                 </p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                
+                <!-- Bottom Dashboard Row: Restock Checklist & Transaction Download Center -->
+                <div class="dashboard-bottom-grid">
+                    <!-- Left: Items to Buy (Restock Shopping List) -->
+                    <section class="restock-list-section glass">
+                        <div class="panel-header">
+                            <h2>🛒 Stock Purchase List</h2>
+                            <p class="subtitle">Items that are below reorder level and need to be bought for stock</p>
+                        </div>
+                        <div class="shopping-list-container" id="shopping-list-container">
+                            <div class="loading">Loading purchase list...</div>
+                        </div>
+                    </section>
+
+                    <!-- Right: Transaction Download Center -->
+                    <section class="tx-download-section glass">
+                        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: none;">
+                            <div>
+                                <h2>📥 Transaction Download Center</h2>
+                                <p class="subtitle">Download transaction logs or individual invoice CSV files</p>
+                            </div>
+                            <a href="/api/download/transactions" class="download-all-btn">📥 Consolidated Excel</a>
+                        </div>
+                        <div class="recent-tx-container">
+                            <h3 class="recent-tx-title">Recent Transactions</h3>
+                            <div class="recent-tx-list" id="recent-tx-list">
+                                <div class="loading">Loading recent transactions...</div>
                             </div>
                         </div>
                     </section>
@@ -219,8 +257,8 @@
             <div class="receipt-paper">
                 <div class="receipt-header">
                     <h3>RETAILPULSE STORE</h3>
-                    <p>123 Analytics Avenue, Cyber City</p>
-                    <p>PH: 555-0199</p>
+                    <p>Shop no 12/13 station road bhayander west</p>
+                    <p>PH: 9769591887</p>
                     <div class="divider">===============================</div>
                     <h4>CASH RECEIPT / INVOICE</h4>
                     <div class="divider">===============================</div>
@@ -242,11 +280,14 @@
                 </div>
                 <div class="divider">===============================</div>
                 <div class="receipt-footer">
-                    <p>Data recorded in transactions.csv</p>
+                    <p>Data recorded in transactions_excel.csv</p>
                     <div class="simulated-barcode">||| | | || ||| || ||| | ||</div>
                 </div>
             </div>
-            <button class="modal-close-btn" id="close-receipt-btn">CLOSE RECEIPT & RETURN</button>
+            <div class="modal-actions-container" style="display: flex; gap: 12px; width: 100%;">
+                <button class="modal-close-btn" id="download-tx-csv-btn" style="flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #080710; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.2);">📥 DOWNLOAD CSV</button>
+                <button class="modal-close-btn" id="close-receipt-btn" style="flex: 1; background: rgba(255,255,255,0.08); color: var(--text-primary); border: 1px solid var(--glass-border); box-shadow: none;">CLOSE</button>
+            </div>
         </div>
     </div>
     

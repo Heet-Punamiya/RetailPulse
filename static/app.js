@@ -66,6 +66,7 @@ async function fetchDashboardData() {
     try {
         await fetchSummary();
         await fetchInventory();
+        await fetchRecentTransactions();
     } catch (error) {
         console.error("Error refreshing dashboard data:", error);
     }
@@ -80,6 +81,13 @@ async function fetchSummary() {
         
         // Update DOM
         document.getElementById("stat-revenue").textContent = `₹${data.total_revenue.toLocaleString()}`;
+        
+        // Update Today's Sales (display Nil if 0)
+        const todayRevenueVal = document.getElementById("stat-today-revenue");
+        if (todayRevenueVal) {
+            todayRevenueVal.textContent = data.today_revenue > 0 ? `₹${data.today_revenue.toLocaleString()}` : "Nil";
+        }
+        
         document.getElementById("stat-top-product").textContent = data.top_selling_product;
         document.getElementById("stat-total-products").textContent = data.total_products;
         
@@ -175,6 +183,7 @@ async function fetchInventory() {
         // Update all related UI views
         renderPOSCatalog();
         renderManagerTab();
+        renderShoppingList(items);
         
     } catch (e) {
         listContainer.innerHTML = `<div class="loading">Failed to load inventory data: ${e.message}</div>`;
@@ -688,6 +697,17 @@ function showReceipt(result, items, subtotal, tax, total) {
     document.getElementById("r-tax").textContent = `₹${tax.toFixed(2)}`;
     document.getElementById("r-total").textContent = `₹${total.toFixed(2)}`;
     
+    // Wire up the download button
+    const dlBtn = document.getElementById("download-tx-csv-btn");
+    if (dlBtn) {
+        // Clone to remove previous event listeners
+        const newDlBtn = dlBtn.cloneNode(true);
+        dlBtn.parentNode.replaceChild(newDlBtn, dlBtn);
+        newDlBtn.addEventListener("click", () => {
+            window.location.href = `/api/download/transaction/${result.tx_key}`;
+        });
+    }
+    
     modal.classList.add("active");
 }
 
@@ -787,5 +807,80 @@ async function handleRestock(e) {
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = "📥 Log Inventory Inbound";
+    }
+}
+
+// Render the Shopping List of items that are low/out of stock and need to be bought
+function renderShoppingList(items) {
+    const container = document.getElementById("shopping-list-container");
+    if (!container) return;
+    
+    // Filter items where current stock is below or equal to reorder level
+    const lowStockItems = items.filter(item => item.current_stock <= item.reorder_level);
+    
+    if (lowStockItems.length === 0) {
+        container.innerHTML = `
+            <div class="empty-shopping-list" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; color: var(--text-secondary);">
+                <span style="font-size: 32px; margin-bottom: 8px;">✅</span>
+                <p>All stock levels are healthy! No items need to be purchased.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = "";
+    lowStockItems.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "shopping-list-card glass";
+        
+        // Suggested quantity to buy: reorder_level * 2 - current_stock, rounded to a multiple of 5
+        const suggestedBuy = Math.max(10, Math.ceil((item.reorder_level * 2 - item.current_stock) / 5) * 5);
+        
+        card.innerHTML = `
+            <div class="sli-info">
+                <span class="sli-name">${item.product_name}</span>
+                <span class="sli-details">Stock: <strong>${item.current_stock}</strong> / Reorder Level: ${item.reorder_level}</span>
+            </div>
+            <span class="sli-buy-badge">Order: +${suggestedBuy} qty</span>
+        `;
+        container.appendChild(card);
+    });
+}
+
+// Fetch the 10 most recent transactions and populate the Download Center list
+async function fetchRecentTransactions() {
+    const container = document.getElementById("recent-tx-list");
+    if (!container) return;
+    
+    try {
+        const response = await fetch("/api/transactions/recent");
+        if (!response.ok) throw new Error("Recent transactions API failed");
+        const txs = await response.json();
+        
+        if (txs.length === 0) {
+            container.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; color: var(--text-secondary);">
+                    No transactions recorded yet.
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = "";
+        txs.forEach(tx => {
+            const row = document.createElement("div");
+            row.className = "tx-row glass";
+            row.innerHTML = `
+                <div class="tx-info">
+                    <span class="tx-time">🕒 ${tx.time} (${tx.day})</span>
+                    <span class="tx-details">${tx.total_items} item(s) | Total Paid: <strong>₹${tx.total_paid.toLocaleString()}</strong></span>
+                </div>
+                <a href="/api/download/transaction/${tx.tx_key}" class="tx-dl-btn" title="Download CSV for this transaction">📥 CSV</a>
+            `;
+            container.appendChild(row);
+        });
+    } catch (e) {
+        console.error("Error fetching recent transactions:", e);
+        container.innerHTML = `<div class="loading">Failed to load recent transactions: ${e.message}</div>`;
     }
 }
