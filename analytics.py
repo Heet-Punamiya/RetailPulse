@@ -1,5 +1,7 @@
 import os
+import shutil
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -26,18 +28,22 @@ VERCEL = os.environ.get("VERCEL") == "1"
 if VERCEL:
     TRANSACTIONS_FILE = "/tmp/transactions.csv"
     INVENTORY_FILE = "/tmp/inventory.csv"
+    TX_EXCEL_FILE = "/tmp/transactions_excel.csv"
     
-    import shutil
     orig_tx = os.path.join("data", "transactions.csv")
     orig_inv = os.path.join("data", "inventory.csv")
+    orig_excel = os.path.join("data", "transactions_excel.csv")
     
     if not os.path.exists(TRANSACTIONS_FILE) and os.path.exists(orig_tx):
         shutil.copy(orig_tx, TRANSACTIONS_FILE)
     if not os.path.exists(INVENTORY_FILE) and os.path.exists(orig_inv):
         shutil.copy(orig_inv, INVENTORY_FILE)
+    if not os.path.exists(TX_EXCEL_FILE) and os.path.exists(orig_excel):
+        shutil.copy(orig_excel, TX_EXCEL_FILE)
 else:
     TRANSACTIONS_FILE = os.path.join("data", "transactions.csv")
     INVENTORY_FILE = os.path.join("data", "inventory.csv")
+    TX_EXCEL_FILE = os.path.join("data", "transactions_excel.csv")
 
 # Pydantic Schemas for JSON requests
 class RestockRequest(BaseModel):
@@ -52,6 +58,51 @@ class CheckoutRequest(BaseModel):
     items: List[CartItem]
     total_paid: float
 
+def init_transactions_excel():
+    if os.path.exists(TX_EXCEL_FILE):
+        return
+    
+    # Generate the initial transactions excel file from current data
+    tx_df = pd.read_csv(TRANSACTIONS_FILE)
+    inv_df = pd.read_csv(INVENTORY_FILE)
+    tx_df['timestamp'] = pd.to_datetime(tx_df['timestamp'])
+    
+    # Sort chronologically
+    tx_df = tx_df.sort_values("timestamp")
+    
+    # Calculate stock remaining going backward
+    current_stocks = inv_df.set_index("product_name")["current_stock"].to_dict()
+    reversed_txs = tx_df.iloc[::-1].copy()
+    remaining_stocks_list = []
+    
+    for idx, row in reversed_txs.iterrows():
+        prod = row["product_name"]
+        qty = row["quantity_sold"]
+        
+        stock_after = current_stocks.get(prod, 0)
+        remaining_stocks_list.append(stock_after)
+        
+        # update current stocks moving backward
+        current_stocks[prod] = stock_after + qty
+        
+    remaining_stocks_list.reverse()
+    tx_df["stock_remaining"] = remaining_stocks_list
+    
+    tx_df["time"] = tx_df["timestamp"].dt.strftime("%Y-%m-%d %H:%M:%S")
+    tx_df["day"] = tx_df["timestamp"].dt.strftime("%A")
+    
+    excel_df = tx_df[["product_name", "time", "day", "unit_price", "quantity_sold", "stock_remaining"]].copy()
+    excel_df.columns = ["Product Name", "Time", "Day", "Price", "Quantity", "Stock Remaining"]
+    
+    os.makedirs(os.path.dirname(TX_EXCEL_FILE), exist_ok=True)
+    excel_df.to_csv(TX_EXCEL_FILE, index=False)
+    
+    if VERCEL:
+        try:
+            shutil.copy(TX_EXCEL_FILE, os.path.join("data", "transactions_excel.csv"))
+        except Exception:
+            pass
+
 def load_data():
     if not os.path.exists(TRANSACTIONS_FILE) or not os.path.exists(INVENTORY_FILE):
         raise HTTPException(status_code=500, detail="Data files not found.")
@@ -60,6 +111,11 @@ def load_data():
     inv_df = pd.read_csv(INVENTORY_FILE)
     tx_df['timestamp'] = pd.to_datetime(tx_df['timestamp'])
     tx_df['date'] = tx_df['timestamp'].dt.date
+    
+    # Initialize the excel file if it's not present
+    if not os.path.exists(TX_EXCEL_FILE):
+        init_transactions_excel()
+        
     return tx_df, inv_df
 
 @app.get("/api/summary")
@@ -72,6 +128,19 @@ def get_summary():
         top_selling = tx_df.groupby('product_name')['quantity_sold'].sum().idxmax()
     else:
         top_selling = "None"
+        
+    # Calculate Today's Revenue (GMT+5:30)
+    if VERCEL:
+        ist_now = datetime.utcnow() + timedelta(hours=5, minutes=30)
+    else:
+        ist_now = datetime.now()
+    today_date = ist_now.date()
+    
+    today_tx = tx_df[tx_df['timestamp'].dt.date == today_date]
+    if not today_tx.empty:
+        today_revenue = round(float((today_tx['quantity_sold'] * today_tx['unit_price']).sum()), 2)
+    else:
+        today_revenue = 0.0
         
     max_date = tx_df['timestamp'].max() if not tx_df.empty else datetime.now()
     cutoff_date = max_date - timedelta(days=14)
@@ -93,6 +162,7 @@ def get_summary():
             
     return {
         "total_revenue": total_revenue,
+        "today_revenue": today_revenue,
         "top_selling_product": top_selling,
         "low_stock_alerts": low_stock_count,
         "total_products": len(inv_df)
@@ -235,13 +305,17 @@ def checkout_cart(payload: CheckoutRequest):
     temp = round(22.0 + random.random() * 8.0, 1) # 22-30 degrees
     
     new_transactions = []
+    receipt_items_detail = []
+    excel_new_rows = []
     
     for item in payload.items:
         # Deduct inventory
         inv_df.loc[inv_df['product_name'] == item.product_name, 'current_stock'] -= item.quantity
         
-        # Get price
+        # Get price & remaining stock
         price = float(inv_df.loc[inv_df['product_name'] == item.product_name, 'unit_price'].iloc[0])
+        remaining_stock = int(inv_df.loc[inv_df['product_name'] == item.product_name, 'current_stock'].iloc[0])
+        day_name = timestamp.strftime("%A")
         
         # Track new transaction
         new_transactions.append({
@@ -253,21 +327,62 @@ def checkout_cart(payload: CheckoutRequest):
             "temperature": temp
         })
         
+        receipt_items_detail.append({
+            "product_name": item.product_name,
+            "quantity": item.quantity,
+            "unit_price": price,
+            "remaining_stock": remaining_stock
+        })
+        
+        # Add to Excel file log
+        excel_new_rows.append({
+            "Product Name": item.product_name,
+            "Time": timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            "Day": day_name,
+            "Price": price,
+            "Quantity": item.quantity,
+            "Stock Remaining": remaining_stock
+        })
+        
     # Save files
     inv_df.to_csv(INVENTORY_FILE, index=False)
     
-    # Append transactions
+    # Append to standard transactions.csv
     new_tx_df = pd.DataFrame(new_transactions)
     combined_tx_df = pd.concat([tx_df.drop(columns=['date'], errors='ignore'), new_tx_df], ignore_index=True)
     combined_tx_df.to_csv(TRANSACTIONS_FILE, index=False)
     
+    # Append to Excel-friendly transactions_excel.csv
+    if os.path.exists(TX_EXCEL_FILE):
+        excel_df = pd.read_csv(TX_EXCEL_FILE)
+        excel_df = pd.concat([excel_df, pd.DataFrame(excel_new_rows)], ignore_index=True)
+    else:
+        excel_df = pd.DataFrame(excel_new_rows)
+    excel_df.to_csv(TX_EXCEL_FILE, index=False)
+    
+    # Sync back to original files if on Vercel
+    if VERCEL:
+        try:
+            shutil.copy(INVENTORY_FILE, os.path.join("data", "inventory.csv"))
+            shutil.copy(TRANSACTIONS_FILE, os.path.join("data", "transactions.csv"))
+            shutil.copy(TX_EXCEL_FILE, os.path.join("data", "transactions_excel.csv"))
+        except Exception:
+            pass
+            
     return {
         "invoice_id": invoice_id,
         "timestamp": timestamp.strftime("%Y-%m-%d %H:%M:%S"),
         "total_items": sum(item.quantity for item in payload.items),
         "total_paid": payload.total_paid,
+        "items": receipt_items_detail,
         "message": "Checkout completed successfully and inventory updated."
     }
+
+@app.get("/api/download/transactions")
+def download_transactions():
+    if not os.path.exists(TX_EXCEL_FILE):
+        init_transactions_excel()
+    return FileResponse(TX_EXCEL_FILE, media_type="text/csv", filename="transactions_log.csv")
 
 # Mount static files folder
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
