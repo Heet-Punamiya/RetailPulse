@@ -1,2 +1,13 @@
+[project]
+name = "retailpulse"
+version = "0.1.0"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pandas",
+    "scikit-learn",
+    "numpy"
+]
+
 [tool.vercel]
 entrypoint = "analytics:app"
