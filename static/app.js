@@ -53,6 +53,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (restockForm) {
         restockForm.addEventListener("submit", handleRestock);
     }
+
+    // 8. Wire up POS Search Input
+    const searchInput = document.getElementById("pos-search-input");
+    if (searchInput) {
+        searchInput.addEventListener("input", renderPOSCatalog);
+    }
 });
 
 // Main data fetching orchestrator
@@ -332,47 +338,166 @@ function renderChart(labels, actualData, forecastData, productName) {
     });
 }
 
+// Categorize products systematically based on their name keywords
+function getProductCategory(productName) {
+    const name = productName.toLowerCase();
+    
+    if (name.includes("rice")) {
+        return { name: "Rice & Grains", icon: "🌾" };
+    }
+    if (name.includes("dal") || name.includes("chana") || name.includes("rajma") || name.includes("moong") || name.includes("lobia") || name.includes("matki") || name.includes("masoor") || name.includes("chawli") || name.includes("beans") || name.includes("peas")) {
+        return { name: "Dal & Pulses", icon: "🥣" };
+    }
+    if (name.includes("atta") || name.includes("maida") || name.includes("besan") || name.includes("rava") || name.includes("suji") || name.includes("dosa mix") || name.includes("idli mix") || name.includes("vermicelli")) {
+        return { name: "Atta & Flours", icon: "🍞" };
+    }
+    if (name.includes("oil") || name.includes("ghee") || name.includes("vanaspati")) {
+        return { name: "Oils & Ghee", icon: "🧴" };
+    }
+    if (name.includes("masala") || (name.includes("powder") && !name.includes("talcum") && !name.includes("detergent")) || name.includes("seeds") || name.includes("hing") || name.includes("cardamom") || name.includes("cloves") || name.includes("cinnamon") || name.includes("anise") || name.includes("ajwain") || name.includes("jeera") || name.includes("rai") || name.includes("methi") || name.includes("pepper")) {
+        return { name: "Spices & Masalas", icon: "🌶️" };
+    }
+    if (name.includes("milk") || name.includes("butter") || name.includes("paneer") || name.includes("dahi") || name.includes("cheese") || name.includes("bread") || name.includes("lassi") || name.includes("curd")) {
+        return { name: "Dairy & Bakery", icon: "🥛" };
+    }
+    if (name.includes("biscuit") || name.includes("cookie") || name.includes("chocolate") || name.includes("chips") || name.includes("wafer") || name.includes("namkeen") || name.includes("bhujia") || name.includes("sev") || name.includes("mixture") || name.includes("popcorn") || name.includes("jamun") || name.includes("rasgulla") || name.includes("soan papdi") || name.includes("sweet") || name.includes("silk") || name.includes("kitkat") || name.includes("snickers") || name.includes("5 star") || name.includes("perk") || name.includes("munch") || name.includes("ice cream") || name.includes("oreo") || name.includes("kurkure") || name.includes("lay's") || (name.includes("bar") && (name.includes("perk") || name.includes("munch") || name.includes("chocolate"))) || name.includes("wafers") || name.includes("candy")) {
+        return { name: "Snacks & Sweets", icon: "🍿" };
+    }
+    if (name.includes("tea") || name.includes("coffee") || name.includes("drink") || name.includes("juice") || name.includes("water") || name.includes("cola") || name.includes("sprite") || name.includes("fanta") || name.includes("pepsi") || name.includes("maaza") || name.includes("frooti") || name.includes("bournvita") || name.includes("horlicks") || name.includes("boost") || name.includes("complan") || name.includes("aam panna") || name.includes("anar")) {
+        return { name: "Beverages", icon: "☕" };
+    }
+    if (name.includes("soap") || name.includes("shampoo") || name.includes("toothpaste") || name.includes("toothbrush") || name.includes("razor") || name.includes("blade") || name.includes("shaving") || name.includes("lotion") || name.includes("cream") || name.includes("talcum") || name.includes("aloe vera") || name.includes("gel") || name.includes("hair oil") || name.includes("handwash") || name.includes("antiseptic") || name.includes("mouth freshener") || name.includes("mouthwash")) {
+        return { name: "Personal Care", icon: "🧼" };
+    }
+    if (name.includes("detergent") || name.includes("dishwash") || name.includes("cleaner") || (name.includes("bar") && (name.includes("rin") || name.includes("vim") || name.includes("exo") || name.includes("pril"))) || name.includes("freshener") || name.includes("conditioner") || name.includes("fragrance") || name.includes("killer") || name.includes("spray") || name.includes("insect") || name.includes("odonil") || name.includes("lizol") || name.includes("harpic") || name.includes("colin")) {
+        return { name: "Household Utilities", icon: "🧹" };
+    }
+    if (name.includes("badam") || name.includes("almonds") || name.includes("kaju") || name.includes("cashew") || name.includes("kishmish") || name.includes("raisins") || name.includes("pista") || name.includes("pistachios") || name.includes("akhrot") || name.includes("walnuts") || name.includes("dry fruit") || name.includes("nuts")) {
+        return { name: "Dry Fruits & Nuts", icon: "🌰" };
+    }
+    
+    return { name: "Other Grocery", icon: "📦" };
+}
+
 // Render POS Product Catalog Cards
 function renderPOSCatalog() {
     const catalogContainer = document.getElementById("pos-catalog-container");
     if (!catalogContainer) return;
     
+    const searchInput = document.getElementById("pos-search-input");
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+    
     catalogContainer.innerHTML = "";
     
+    // Group products
+    const categoriesMap = {};
+    
+    // Filter & categorize items
     inventoryData.forEach(item => {
-        const isOutOfStock = item.current_stock <= 0;
-        const isLowStock = item.current_stock <= item.reorder_level;
-        
-        let stockClass = "pos-item-stock";
-        let stockText = `Stock: ${item.current_stock} units`;
-        if (isOutOfStock) {
-            stockClass += " out-warn";
-            stockText = "Out of Stock";
-        } else if (isLowStock) {
-            stockClass += " low-warn";
-            stockText = `Low Stock: ${item.current_stock} units`;
+        if (query && !item.product_name.toLowerCase().includes(query)) {
+            return; // Skip items that don't match query
         }
         
-        const card = document.createElement("div");
-        card.className = "pos-item-card glass";
-        card.innerHTML = `
-            <div>
-                <div class="pos-item-name">${item.product_name}</div>
-                <div class="${stockClass}">${stockText}</div>
+        const cat = getProductCategory(item.product_name);
+        if (!categoriesMap[cat.name]) {
+            categoriesMap[cat.name] = {
+                name: cat.name,
+                icon: cat.icon,
+                items: []
+            };
+        }
+        categoriesMap[cat.name].items.push(item);
+    });
+    
+    const categoryNames = Object.keys(categoriesMap);
+    
+    if (categoryNames.length === 0) {
+        catalogContainer.innerHTML = `
+            <div class="empty-search-message">
+                <span class="empty-icon">🔍</span>
+                <p>No products found matching "${query}"</p>
             </div>
-            <div class="pos-item-price">₹${item.unit_price.toFixed(2)}</div>
-            <button class="pos-add-btn" ${isOutOfStock ? "disabled" : ""}>
-                ${isOutOfStock ? "Out of stock" : "Add to Cart"}
-            </button>
         `;
+        return;
+    }
+    
+    // Define custom ordering of categories
+    const categoryOrder = [
+        "Rice & Grains",
+        "Dal & Pulses",
+        "Atta & Flours",
+        "Oils & Ghee",
+        "Spices & Masalas",
+        "Dairy & Bakery",
+        "Snacks & Sweets",
+        "Beverages",
+        "Personal Care",
+        "Household Utilities",
+        "Dry Fruits & Nuts",
+        "Other Grocery"
+    ];
+    
+    // Sort categoryNames based on custom order, putting any undefined categories at the end
+    categoryNames.sort((a, b) => {
+        let idxA = categoryOrder.indexOf(a);
+        let idxB = categoryOrder.indexOf(b);
+        if (idxA === -1) idxA = 999;
+        if (idxB === -1) idxB = 999;
+        return idxA - idxB;
+    });
+    
+    categoryNames.forEach(catName => {
+        const catObj = categoriesMap[catName];
         
-        // Add to Cart handler
-        const addBtn = card.querySelector(".pos-add-btn");
-        addBtn.addEventListener("click", () => {
-            addToCart(item);
+        const catGroup = document.createElement("div");
+        catGroup.className = "pos-category-group";
+        
+        const catTitle = document.createElement("h3");
+        catTitle.className = "pos-category-title";
+        catTitle.innerHTML = `${catObj.icon} ${catObj.name} <span class="cat-count">(${catObj.items.length})</span>`;
+        catGroup.appendChild(catTitle);
+        
+        const itemsGrid = document.createElement("div");
+        itemsGrid.className = "pos-category-items";
+        
+        catObj.items.forEach(item => {
+            const isOutOfStock = item.current_stock <= 0;
+            const isLowStock = item.current_stock <= item.reorder_level;
+            
+            let stockClass = "pos-item-stock";
+            let stockText = `Stock: ${item.current_stock} units`;
+            if (isOutOfStock) {
+                stockClass += " out-warn";
+                stockText = "Out of Stock";
+            } else if (isLowStock) {
+                stockClass += " low-warn";
+                stockText = `Low Stock: ${item.current_stock} units`;
+            }
+            
+            const card = document.createElement("div");
+            card.className = "pos-item-card glass";
+            card.innerHTML = `
+                <div>
+                    <div class="pos-item-name">${item.product_name}</div>
+                    <div class="${stockClass}">${stockText}</div>
+                </div>
+                <div class="pos-item-price">₹${item.unit_price.toFixed(2)}</div>
+                <button class="pos-add-btn" ${isOutOfStock ? "disabled" : ""}>
+                    ${isOutOfStock ? "Out of stock" : "Add to Cart"}
+                </button>
+            `;
+            
+            // Add to Cart handler
+            const addBtn = card.querySelector(".pos-add-btn");
+            addBtn.addEventListener("click", () => {
+                addToCart(item);
+            });
+            
+            itemsGrid.appendChild(card);
         });
         
-        catalogContainer.appendChild(card);
+        catGroup.appendChild(itemsGrid);
+        catalogContainer.appendChild(catGroup);
     });
 }
 
