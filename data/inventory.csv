@@ -1,26 +1,26 @@
 product_name,current_stock,unit_price,reorder_level
 Aashirvaad Atta Shudh Chakki 5kg,55,260.0,20
-Fortune Chakki Fresh Atta 10kg,84,490.0,20
-Pillsbury Chakki Fresh Atta 5kg,70,255.0,30
-Daawat Rozana Super Basmati Rice 5kg,120,399.0,30
+Fortune Chakki Fresh Atta 10kg,83,490.0,20
+Pillsbury Chakki Fresh Atta 5kg,69,255.0,30
+Daawat Rozana Super Basmati Rice 5kg,119,399.0,30
 India Gate Feast Rozana Basmati Rice 5kg,105,380.0,25
-India Gate Basmati Rice Premium 1kg,55,110.0,20
-D-Mart Premia Kolam Rice 10kg,69,650.0,30
-D-Mart Premia Jeera Rice 1kg,105,120.0,20
+India Gate Basmati Rice Premium 1kg,53,110.0,20
+D-Mart Premia Kolam Rice 10kg,50,650.0,30
+D-Mart Premia Jeera Rice 1kg,103,120.0,20
 Fortune Sona Masoori Rice 5kg,70,340.0,25
 D-Mart Premia Maida 1kg,55,45.0,20
 D-Mart Premia Besan 1kg,85,90.0,25
 D-Mart Premia Rava (Suji) 1kg,70,60.0,25
 MTR Rava Idli Mix 500g,55,110.0,25
 MTR Dosa Mix 500g,85,120.0,25
-Gits Gulab Jamun Mix 200g,54,115.0,30
+Gits Gulab Jamun Mix 200g,51,115.0,30
 Aashirvaad Rava Idli Mix 500g,105,115.0,20
 D-Mart Premia Thick Poha 1kg,55,55.0,30
 D-Mart Premia Sabudana 500g,120,50.0,30
 Tata Salt Lite 1kg,104,28.0,20
 Tata Salt Rock Salt 1kg,55,75.0,20
 D-Mart Premia Sugar 1kg,70,48.0,25
-D-Mart Premia Sugar 5kg,70,235.0,20
+D-Mart Premia Sugar 5kg,52,235.0,20
 D-Mart Premia Jaggery Powder 1kg,85,80.0,25
 D-Mart Premia Toor Dal 1kg,70,170.0,25
 D-Mart Premia Chana Dal 1kg,70,95.0,30
@@ -51,14 +51,14 @@ Gemini Vanaspati Ghee 1L,120,120.0,25
 Parachute Pure Coconut Oil 500ml,85,190.0,25
 Everest Turmeric Powder 200g,90,55.0,20
 Everest Kashmiri Lalchili Powder 200g,105,120.0,20
-Everest Coriander Powder 200g,120,65.0,25
+Everest Coriander Powder 200g,117,65.0,25
 Everest Garam Masala 100g,70,85.0,25
-Everest Tikhalal Chilli Powder 200g,105,115.0,30
-MDH Kitchen King Masala 100g,105,88.0,25
+Everest Tikhalal Chilli Powder 200g,104,115.0,30
+MDH Kitchen King Masala 100g,104,88.0,25
 MDH Chana Masala 100g,55,78.0,20
 MDH Pav Bhaji Masala 100g,85,78.0,20
-MDH Sambhar Masala 100g,70,78.0,30
-MDH Chunky Chat Masala 100g,55,78.0,30
+MDH Sambhar Masala 100g,69,78.0,30
+MDH Chunky Chat Masala 100g,54,78.0,30
 Catch Black Pepper Powder 100g,55,75.0,30
 Patanjali Bandhani Hing 25g,70,45.0,30
 D-Mart Premia Cumin Seeds (Jeera) 200g,105,140.0,20

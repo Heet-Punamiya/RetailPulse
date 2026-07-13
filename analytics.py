@@ -21,8 +21,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-TRANSACTIONS_FILE = os.path.join("data", "transactions.csv")
-INVENTORY_FILE = os.path.join("data", "inventory.csv")
+VERCEL = os.environ.get("VERCEL") == "1"
+
+if VERCEL:
+    TRANSACTIONS_FILE = "/tmp/transactions.csv"
+    INVENTORY_FILE = "/tmp/inventory.csv"
+    
+    import shutil
+    orig_tx = os.path.join("data", "transactions.csv")
+    orig_inv = os.path.join("data", "inventory.csv")
+    
+    if not os.path.exists(TRANSACTIONS_FILE) and os.path.exists(orig_tx):
+        shutil.copy(orig_tx, TRANSACTIONS_FILE)
+    if not os.path.exists(INVENTORY_FILE) and os.path.exists(orig_inv):
+        shutil.copy(orig_inv, INVENTORY_FILE)
+else:
+    TRANSACTIONS_FILE = os.path.join("data", "transactions.csv")
+    INVENTORY_FILE = os.path.join("data", "inventory.csv")
 
 # Pydantic Schemas for JSON requests
 class RestockRequest(BaseModel):
