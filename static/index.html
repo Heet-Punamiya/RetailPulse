@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailPulse - Smart Inventory Predictor & POS</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&family=Courier+Prime&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header glass">
+            <div class="brand">
+                <div class="logo-icon">📊</div>
+                <h1>RETAIL<span>PULSE</span></h1>
+                <span class="badge">Predictive Engine & POS v2.0</span>
+            </div>
+            <div class="refresh-container">
+                <span class="status-indicator online"></span>
+                <span class="status-text">FastAPI POS Backend Active</span>
+                <button id="refresh-btn" class="refresh-btn">🔄 Refresh Dashboard</button>
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-navigation glass">
+            <button class="tab-btn active" data-tab="dashboard-pane">📈 Analytics Dashboard</button>
+            <button class="tab-btn" data-tab="pos-pane">🛒 POS Checkout & Billing</button>
+            <button class="tab-btn" data-tab="manager-pane">⚡ Inventory Restock</button>
+        </nav>
+
+        <!-- Tab Content Panes -->
+        <div class="tab-content">
+            
+            <!-- T1: Analytics Dashboard -->
+            <div class="tab-pane active" id="dashboard-pane">
+                <!-- Summary Statistics Row -->
+                <section class="summary-row">
+                    <div class="summary-card glass">
+                        <div class="card-icon">💰</div>
+                        <div class="card-info">
+                            <span class="label">90-DAY REVENUE</span>
+                            <h3 id="stat-revenue">₹0.00</h3>
+                        </div>
+                    </div>
+                    <div class="summary-card glass">
+                        <div class="card-icon">🏆</div>
+                        <div class="card-info">
+                            <span class="label">TOP SELLING PRODUCT</span>
+                            <h3 id="stat-top-product">-</h3>
+                        </div>
+                    </div>
+                    <div class="summary-card glass alert-card" id="alert-card-container">
+                        <div class="card-icon">⚠️</div>
+                        <div class="card-info">
+                            <span class="label">LOW STOCK ALERTS</span>
+                            <h3 id="stat-alerts">0</h3>
+                        </div>
+                    </div>
+                    <div class="summary-card glass">
+                        <div class="card-icon">📦</div>
+                        <div class="card-info">
+                            <span class="label">TOTAL TRACKED ITEMS</span>
+                            <h3 id="stat-total-products">0</h3>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="dashboard-grid">
+                    <!-- Left: Inventory Status -->
+                    <section class="inventory-section glass">
+                        <div class="panel-header">
+                            <h2>INVENTORY STATUS & RUN-OUT TIMES</h2>
+                            <p class="subtitle">Estimated days remaining based on daily sales velocity</p>
+                        </div>
+                        <div class="inventory-list" id="inventory-list-container">
+                            <div class="loading">Loading inventory items...</div>
+                        </div>
+                    </section>
+
+                    <!-- Right: Forecasting -->
+                    <section class="forecast-section glass">
+                        <div class="panel-header">
+                            <h2>PREDICTIVE FORECASTING MODEL</h2>
+                            <div class="product-selector-wrapper">
+                                <label for="product-select">Select Product:</label>
+                                <select id="product-select" class="glass-select"></select>
+                            </div>
+                        </div>
+                        <div class="forecast-content">
+                            <div class="forecast-stats">
+                                <div class="f-stat-card glass">
+                                    <span class="lbl">Predicted Next Week Sales</span>
+                                    <h4 id="forecast-total">0 units</h4>
+                                </div>
+                                <div class="f-stat-card glass">
+                                    <span class="lbl">Sales Velocity Trend</span>
+                                    <span id="forecast-trend" class="trend-badge stable">STABLE</span>
+                                </div>
+                                <div class="f-stat-card glass">
+                                    <span class="lbl">Daily Demand Shift</span>
+                                    <span id="forecast-slope" class="slope-val">0.00 / day</span>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="forecastChart"></canvas>
+                            </div>
+                            <div class="forecast-explanation glass">
+                                <div class="info-icon">💡</div>
+                                <p id="forecast-desc">
+                                    Select a product to view the machine learning projection. The dashed lines show future sales demand calculated by a Linear Regression model trained on transactions.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- T2: POS Checkout & Billing -->
+            <div class="tab-pane" id="pos-pane">
+                <div class="pos-grid">
+                    <!-- POS Left: Product Selection Cards -->
+                    <section class="pos-products glass">
+                        <div class="panel-header">
+                            <h2>BILLING TERMINAL</h2>
+                            <p class="subtitle">Click items to add them to the customer's shopping cart</p>
+                        </div>
+                        <div class="products-catalogue" id="pos-catalog-container">
+                            <!-- Populated Dynamically -->
+                        </div>
+                    </section>
+
+                    <!-- POS Right: Active Checkout Cart -->
+                    <section class="pos-cart glass">
+                        <div class="panel-header">
+                            <h2>SHOPPING CART</h2>
+                            <p class="subtitle">Review items and process customer payment</p>
+                        </div>
+                        <div class="cart-wrapper">
+                            <div class="cart-items-list" id="cart-items-container">
+                                <div class="empty-cart-message">Your shopping cart is empty. Click catalog products to add them.</div>
+                            </div>
+                            <div class="cart-billing-summary glass">
+                                <div class="bill-line">
+                                    <span>Subtotal</span>
+                                    <span id="cart-subtotal">₹0.00</span>
+                                </div>
+                                <div class="bill-line">
+                                    <span>Sales Tax (5%)</span>
+                                    <span id="cart-tax">₹0.00</span>
+                                </div>
+                                <div class="bill-line total">
+                                    <span>TOTAL BILL</span>
+                                    <span id="cart-total">₹0.00</span>
+                                </div>
+                                <button id="pay-btn" class="pay-btn" disabled>💵 Pay & Generate Receipt</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- T3: Inventory Restock -->
+            <div class="tab-pane" id="manager-pane">
+                <section class="manager-card glass">
+                    <div class="panel-header">
+                        <h2>INCOMING INVENTORY MANAGER</h2>
+                        <p class="subtitle">Add newly arrived stock manually to update inventory records</p>
+                    </div>
+                    <div class="manager-content">
+                        <form id="restock-form" class="restock-form-container">
+                            <div class="form-group">
+                                <label for="restock-product-select">Select Incoming Product</label>
+                                <select id="restock-product-select" class="glass-select form-input" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="restock-qty">Arrived Stock Quantity (Units)</label>
+                                <input type="number" id="restock-qty" class="form-input" min="1" placeholder="e.g. 50" required>
+                            </div>
+                            <button type="submit" class="submit-btn">📥 Log Inventory Inbound</button>
+                        </form>
+
+                        <div class="stock-overview">
+                            <h3>Current Inventory Quick Check</h3>
+                            <table class="stock-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Current Stock</th>
+                                        <th>Reorder Mark</th>
+                                        <th>Alert Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="quick-stock-tbody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Receipt / Invoice Modal (Populates on checkout) -->
+    <div class="modal-overlay" id="receipt-modal">
+        <div class="receipt-content glass">
+            <div class="receipt-paper">
+                <div class="receipt-header">
+                    <h3>RETAILPULSE STORE</h3>
+                    <p>123 Analytics Avenue, Cyber City</p>
+                    <p>PH: 555-0199</p>
+                    <div class="divider">===============================</div>
+                    <h4>CASH RECEIPT / INVOICE</h4>
+                    <div class="divider">===============================</div>
+                </div>
+                <div class="receipt-meta">
+                    <p>Date: <span id="r-date">-</span></p>
+                    <p>Invoice: <span id="r-invoice">-</span></p>
+                    <p>Status: PAID - Thank You!</p>
+                </div>
+                <div class="divider">-------------------------------</div>
+                <div class="receipt-items" id="r-items-container">
+                    <!-- Populated Dynamically -->
+                </div>
+                <div class="divider">-------------------------------</div>
+                <div class="receipt-totals">
+                    <div class="r-line"><span>Subtotal:</span><span id="r-subtotal">₹0.00</span></div>
+                    <div class="r-line"><span>Tax (5%):</span><span id="r-tax">₹0.00</span></div>
+                    <div class="r-line total"><span>TOTAL PAID:</span><span id="r-total">₹0.00</span></div>
+                </div>
+                <div class="divider">===============================</div>
+                <div class="receipt-footer">
+                    <p>Data recorded in transactions.csv</p>
+                    <div class="simulated-barcode">||| | | || ||| || ||| | ||</div>
+                </div>
+            </div>
+            <button class="modal-close-btn" id="close-receipt-btn">CLOSE RECEIPT & RETURN</button>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+product_name,current_stock,unit_price,reorder_level
+Aashirvaad Atta Shudh Chakki 5kg,55,260.0,20
+Fortune Chakki Fresh Atta 10kg,84,490.0,20
+Pillsbury Chakki Fresh Atta 5kg,70,255.0,30
+Daawat Rozana Super Basmati Rice 5kg,120,399.0,30
+India Gate Feast Rozana Basmati Rice 5kg,105,380.0,25
+India Gate Basmati Rice Premium 1kg,55,110.0,20
+D-Mart Premia Kolam Rice 10kg,69,650.0,30
+D-Mart Premia Jeera Rice 1kg,105,120.0,20
+Fortune Sona Masoori Rice 5kg,70,340.0,25
+D-Mart Premia Maida 1kg,55,45.0,20
+D-Mart Premia Besan 1kg,85,90.0,25
+D-Mart Premia Rava (Suji) 1kg,70,60.0,25
+MTR Rava Idli Mix 500g,55,110.0,25
+MTR Dosa Mix 500g,85,120.0,25
+Gits Gulab Jamun Mix 200g,54,115.0,30
+Aashirvaad Rava Idli Mix 500g,105,115.0,20
+D-Mart Premia Thick Poha 1kg,55,55.0,30
+D-Mart Premia Sabudana 500g,120,50.0,30
+Tata Salt Lite 1kg,104,28.0,20
+Tata Salt Rock Salt 1kg,55,75.0,20
+D-Mart Premia Sugar 1kg,70,48.0,25
+D-Mart Premia Sugar 5kg,70,235.0,20
+D-Mart Premia Jaggery Powder 1kg,85,80.0,25
+D-Mart Premia Toor Dal 1kg,70,170.0,25
+D-Mart Premia Chana Dal 1kg,70,95.0,30
+D-Mart Premia Moong Dal Chilka 1kg,120,130.0,30
+D-Mart Premia Moong Dal Yellow 1kg,105,145.0,30
+D-Mart Premia Masoor Dal Lall 1kg,105,110.0,30
+D-Mart Premia Urad Dal White split 1kg,70,150.0,25
+D-Mart Premia Urad Dal Black whole 1kg,85,140.0,30
+D-Mart Premia Kabuli Chana 1kg,120,160.0,25
+D-Mart Premia Kala Chana 1kg,70,85.0,20
+D-Mart Premia Rajma Chitra 1kg,90,155.0,25
+D-Mart Premia Green Moong Whole 1kg,70,125.0,30
+D-Mart Premia Black Eyed Lobia 1kg,70,115.0,30
+D-Mart Premia Matki (Moth Beans) 1kg,90,120.0,30
+D-Mart Premia Masoor Whole 1kg,70,105.0,25
+D-Mart Premia Chawli (Black Eyed) 1kg,70,110.0,30
+Amul Pure Cow Ghee 1L,120,680.0,30
+Gowardhan Cow Ghee 1L,105,710.0,25
+Fortune Mustard Oil 1L,70,175.0,20
+Fortune Sunflower Refined Oil 1L,54,145.0,20
+Fortune Kachi Ghani Mustard Oil 1L,70,180.0,30
+Fortune Rice Bran Health Oil 1L,120,165.0,25
+Saffola Gold Pro Healthy Oil 5L,90,850.0,25
+Saffola Active Oil 1L,105,170.0,25
+Dhara Groundnut Oil 1L,120,195.0,30
+Dhara Soyabean Refined Oil 1L,120,135.0,30
+Gemini Vanaspati Ghee 1L,120,120.0,25
+Parachute Pure Coconut Oil 500ml,85,190.0,25
+Everest Turmeric Powder 200g,90,55.0,20
+Everest Kashmiri Lalchili Powder 200g,105,120.0,20
+Everest Coriander Powder 200g,120,65.0,25
+Everest Garam Masala 100g,70,85.0,25
+Everest Tikhalal Chilli Powder 200g,105,115.0,30
+MDH Kitchen King Masala 100g,105,88.0,25
+MDH Chana Masala 100g,55,78.0,20
+MDH Pav Bhaji Masala 100g,85,78.0,20
+MDH Sambhar Masala 100g,70,78.0,30
+MDH Chunky Chat Masala 100g,55,78.0,30
+Catch Black Pepper Powder 100g,55,75.0,30
+Patanjali Bandhani Hing 25g,70,45.0,30
+D-Mart Premia Cumin Seeds (Jeera) 200g,105,140.0,20
+D-Mart Premia Mustard Seeds (Rai) 200g,105,40.0,30
+D-Mart Premia Fenugreek Seeds (Methi) 200g,70,45.0,30
+D-Mart Premia Fennel Seeds (Saunf) 200g,120,70.0,25
+D-Mart Premia Coriander Seeds (Dhana) 200g,120,50.0,30
+D-Mart Premia Sesame Seeds White (Til) 200g,90,90.0,30
+D-Mart Premia Ajwain 100g,55,45.0,20
+D-Mart Premia Green Cardamom (Elaichi) 50g,55,180.0,25
+D-Mart Premia Cloves (Laung) 50g,105,95.0,30
+D-Mart Premia Cinnamon Sticks (Dalchini) 100g,105,85.0,20
+D-Mart Premia Black Cardamom 50g,55,110.0,30
+D-Mart Premia Star Anise 50g,70,80.0,20
+Amul Taaza Toned Milk 1L,85,56.0,20
+Amul Gold Full Cream Milk 1L,70,66.0,25
+Amul Masti Spiced Buttermilk 200ml,90,20.0,20
+Amul Pure Butter 500g,120,275.0,30
+Mother Dairy Fresh Paneer 200g,70,90.0,25
+Mother Dairy Classic Dahi 400g,70,50.0,20
+Amul Cheese Slices 200g,120,145.0,25
+Amul Cheese Block 200g,90,135.0,25
+Amul Cheese Spread Garlic 200g,120,120.0,20
+Britannia Brown Bread 400g,120,50.0,30
+Wibs White Bread 400g,55,45.0,25
+Kellogg's Corn Flakes Original 475g,55,220.0,20
+Quaker Instant Oats 1kg,70,190.0,30
+Saffola Masala Oats Classic 500g,70,160.0,25
+Bagrry's Fruit & Fibre Muesli 400g,85,310.0,25
+Haldiram's Alu Bhujia 400g,55,110.0,25
+Haldiram's Bhujia Sev 400g,55,110.0,30
+Haldiram's Moong Dal Namkeen 400g,55,120.0,20
+Haldiram's Panchrattan Mixture 400g,90,130.0,25
+Haldiram's Khatta Meetha Mixture 400g,70,110.0,25
+Haldiram's Cornflakes Mixture 400g,70,120.0,25
+Bikaji Bikaneri Bhujia 400g,90,105.0,25
+Balaji Wafers Simply Salted 100g,85,40.0,25
+Balaji Wafers Masala Masti 100g,70,40.0,20
+Kurkure Masala Munch 90g,70,20.0,20
+Kurkure Green Chutney Rajasthani 90g,120,20.0,25
+Lay's Classic Salted Potato Chips 90g,55,20.0,30
+Lay's India's Magic Masala Chips 90g,105,20.0,30
+Lay's American Style Onion Cream 90g,55,20.0,30
+Bingo Mad Angles Achari Masti 80g,70,20.0,20
+Parle-G Gold Biscuits 250g,120,20.0,20
+Britannia Good Day Cashew Biscuits 200g,55,35.0,30
+Britannia Marie Gold Biscuits 250g,105,30.0,30
+Sunfeast Dark Fantasy Choco Fills 300g,105,120.0,20
+Oreo Vanilla Creme Biscuits 120g,120,35.0,30
+Britannia Bourbon Cream Biscuits 150g,85,30.0,20
+Britannia 50-50 Maska Chaska 120g,70,30.0,25
+Britannia NutriChoice Digestive 250g,70,65.0,30
+Parle Monaco Salted Biscuits 120g,85,25.0,25
+Parle Hide & Seek Chocolate Chips 120g,55,50.0,20
+Haldiram's Gulab Jamun Tin 1kg,105,240.0,30
+Haldiram's Rasgulla Tin 1kg,55,240.0,30
+Haldiram's Soan Papdi 500g,105,140.0,25
+Cadbury Dairy Milk Silk Chocolate 150g,85,175.0,20
+Cadbury Dairy Milk Family Pack 100g,85,100.0,25
+KitKat 4-Finger Chocolate Bar,90,40.0,30
+5 Star Chocolate Bar 20g,105,20.0,30
+Snickers Peanut Chocolate Bar 50g,120,50.0,30
+Perk Chocolate Wafer Bar 15g,120,10.0,20
+Munch Chocolate Wafer Bar 15g,85,10.0,20
+Tata Tea Premium Leaf Tea 1kg,120,420.0,30
+Brooke Bond Red Label Tea 1kg,85,460.0,25
+Tata Tea Gold Leaf Tea 500g,120,240.0,25
+Brooke Bond Taj Mahal Tea 500g,120,320.0,30
+Wagh Bakri Premium Leaf Tea 1kg,105,450.0,25
+Nescafe Classic Instant Coffee 100g,55,310.0,20
+Bru Green Label Coffee 500g,85,180.0,20
+Bru Instant Coffee Jar 100g,85,290.0,20
+Bournvita Chocolate Nutrition Drink 1kg,70,430.0,30
+Horlicks Classic Malt Jar 1kg,105,410.0,30
+Boost Health Drink Refill 500g,105,280.0,20
+Complan Chocolate Health Drink 500g,55,295.0,30
+Coca Cola Soft Drink 2L,105,95.0,20
+Thums Up Soft Drink 2L,105,95.0,30
+Sprite Soft Drink 2L,90,95.0,20
+Limca Lime Lemon Drink 2L,85,95.0,25
+Fanta Orange Soft Drink 2L,85,95.0,20
+Pepsi Soft Drink 2L,120,90.0,20
+Frooti Mango Drink 1.2L,105,75.0,25
+Maaza Mango Drink 1.2L,70,75.0,20
+Real Fruit Power Mixed Fruit Juice 1L,90,120.0,20
+Tropicana 100% Orange Juice 1L,120,125.0,25
+Bisleri Mineral Water Bottle 1L,120,20.0,30
+Kinley Water Bottle 1L,85,20.0,20
+Maggi 2-Minute Masala Noodles 12-Pack,55,168.0,25
+Yippee Magic Masala Noodles 6-Pack,90,85.0,20
+Ching's Secret Hakka Noodles 150g,90,40.0,25
+Ching's Dark Soy Sauce 200g,70,55.0,20
+Ching's Green Chilli Sauce 200g,120,50.0,20
+Ching's Schezwan Chutney 250g,85,85.0,25
+Kissan Fresh Tomato Ketchup 1kg,85,150.0,25
+Knorr Classic Tomato Soup 50g,120,35.0,30
+Knorr Sweet Corn Veg Soup 50g,55,35.0,20
+Kissan Mixed Fruit Jam 700g,70,220.0,30
+Amul Crunchy Peanut Butter 400g,55,175.0,20
+Dabur Apis Himalaya Honey 500g,85,215.0,30
+Surf Excel Easy Wash Detergent 1kg,90,140.0,30
+Ariel Complete Front Load 1kg,90,210.0,30
+Tide Plus Double Power Jasmine 1kg,85,110.0,20
+Rin Laundry Detergent Bar (4-Pack),55,40.0,30
+Vim Lemon Dishwash Liquid Gel 500ml,85,115.0,25
+Vim Dishwash Bar 300g,120,30.0,25
+Pril Lime Liquid Dishwash 425ml,120,105.0,20
+Exo Dishshine Bar 300g,105,30.0,25
+Lizol Floor Cleaner Citrus 1L,85,215.0,25
+Harpic Toilet Cleaner Original 1L,105,195.0,20
+Colin Glass & Surface Cleaner 500ml,90,105.0,30
+Comfort After Wash Fabric Conditioner 860ml,120,235.0,30
+Hit Flying Insect Killer Spray Red 400ml,105,220.0,30
+Dettol Antiseptic Liquid Bottle 500ml,90,210.0,30
+Godrej Aer Pocket Bathroom Air Fragrance,85,60.0,25
+Odonil Bathroom Air Freshener Hanger,90,55.0,30
+Dettol Liquid Handwash Original Refill 1.5L,90,230.0,25
+Dettol Bathing Soap (125g x 3),120,165.0,20
+Lifebuoy Total 10 Soap (125g x 3),120,135.0,20
+Dove Cream Beauty Bathing Bar (125g x 3),85,240.0,30
+Lux Velvet Touch Soap (100g x 3),55,110.0,20
+Pears Pure & Gentle Soap (125g x 3),70,225.0,20
+Santoor Sandal & Turmeric Soap (125g x 3),55,140.0,20
+Colgate Strong Teeth Toothpaste 300g,90,155.0,30
+Close-Up Red Hot Gel Toothpaste 300g,90,160.0,25
+Sensodyne Fresh Mint Sensitivity Toothpaste 100g,120,150.0,30
+Dabur Red Toothpaste 200g,90,115.0,25
+Colgate ZigZag Medium Toothbrush (Buy 2 Get 1),70,70.0,30
+Clinic Plus Strong & Long Shampoo 650ml,55,325.0,25
+Head & Shoulders Anti-Dandruff Cool Menthol 650ml,70,550.0,30
+Dove Intense Repair Shampoo 650ml,55,480.0,30
+Pantene Hair Fall Control Shampoo 650ml,55,450.0,25
+Parachute Advansed Coconut Hair Oil 250ml,90,105.0,30
+Bajaj Almond Drops Hair Oil 200ml,90,125.0,30
+Dabur Amla Hair Oil 275ml,105,115.0,25
+Vaseline Intensive Care Cocoa Glow Body Lotion 400ml,120,360.0,25
+Nivea Soft Light Moisturising Cream 200ml,85,290.0,20
+Ponds Dreamflower Talcum Powder 400g,105,295.0,25
+Gillette Guard Safety Razor,85,25.0,25
+Gillette Guard Razor Blades (5-Pack),120,35.0,25
+Dettol Lather Shaving Cream 70g,85,65.0,25
+Cycle Three In One Agarbatti (Incense) 100 Sticks,105,70.0,20
+Mangaldeep Sandalwood Agarbatti 80 Sticks,70,60.0,20
+D-Mart Premia Camphor (Kapur) Tablets 50g,120,55.0,20
+D-Mart Premia Puja Ghee Diya Wicks (100 pcs),55,80.0,25
+Homelite Safety Matchbox (10-Pack bundle),85,20.0,30
+D-Mart Premia Almonds (Badam) 500g,90,450.0,20
+D-Mart Premia Cashews (Kaju) 500g,90,490.0,25
+D-Mart Premia Raisins (Kishmish) 250g,105,110.0,25
+D-Mart Premia Pistachios (Pista) 250g,55,310.0,25
+D-Mart Premia Walnuts (Akhrot) 250g,90,350.0,25
+Cadbury Bournville Rich Cocoa Chocolate 80g,90,90.0,20
+Real Fruit Power Guava Juice 1L,90,120.0,25
+Del Monte Sweet Corn Tin 400g,90,95.0,25
+Compact Umbrellas Indian Monsoon Edition,120,299.0,20
+Aashirvaad Mustard Seeds (Rai) 100g,70,25.0,30
+Tata Tea Agni Dust Tea 1kg,90,280.0,30
+Dabur Hajmola Anardana Tablets 120 tab,55,55.0,30
+Dabur Hajmola Regular Tablets 120 tab,70,50.0,25
+Everest Kasuri Methi 50g,55,45.0,25
+Vicco Vajradanti Toothpaste 200g,85,140.0,20
+Patanjali Dant Kanti Toothpaste 200g,85,95.0,25
+Paper Boat Aam Panna Drink 250ml,85,35.0,25
+Paper Boat Anar Drink 250ml,55,40.0,25
+Pass Pass Mouth Freshener 100g,120,50.0,30
+Dettol Cool Bathing Soap (125g x 3),85,170.0,20
+Amul Lassi Rose Flavour 200ml,120,25.0,20
+MTR Vermicelli 500g,70,55.0,20
+Act II Popcorn Golden Sizzle 90g,105,45.0,20
+Kwality Walls Vanilla Tub 700ml,70,140.0,25
+Amul Vanilla Gold Ice Cream 1L,105,190.0,20
+Maggi Hot & Sweet Chilli Tomato Sauce 1kg,120,170.0,25
+Lipton Green Tea Honey Lemon 25 Bags,70,155.0,30
+Tata Salt SuperLite 1kg,120,32.0,30
+D-Mart Premia Premium Cashew W180 250g,70,390.0,25
+Aashirvaad Salt 1kg,105,24.0,20
+Patanjali Aloe Vera Gel 150ml,105,110.0,30
